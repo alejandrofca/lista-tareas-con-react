@@ -1,26 +1,72 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useRef, useEffect } from 'react';
+import TodoList from './TodoList'
+import { v4 } from 'uuid'
+
+const LOCAL_STORAGE_KEY = 'todoApp.todos'
 
 function App() {
+  var [todos, setTodos] = useState([])
+  const todoNameRef = useRef()
+  const fecha = new Date().toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric', year: 'numeric', month: 'long' })
+
+  useEffect(() => {
+    const storedTodos = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY))
+    if (storedTodos) setTodos(storedTodos)
+  }, [])
+
+  useEffect(() => {
+    console.log(todos)
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(todos))
+  }, [todos])
+
+  function toggleTodo(id) {
+    const todo = todos.find(todo => todo.id === id)
+    todo.complete = !todo.complete
+    if(todo.complete) { // Actualiza la hora
+      todo.hour = new Date().toLocaleDateString('es-MX', { hour: 'numeric', minute: 'numeric' })
+    }
+    setTodos([...todos])
+  }
+
+  function handleAddTodo(e) {
+    const name = todoNameRef.current.value
+    if (name === '') return
+    setTodos(prevTodos => {
+      return [...prevTodos, { id: v4(), name: name, complete: false, hour: new Date().toLocaleDateString('es-MX', { hour: 'numeric', minute: 'numeric' }) }]
+    })
+    todoNameRef.current.value = null
+    todoNameRef.current.focus()
+  }
+
+  function handleClearTodos() {
+    const todo = todos.filter(todo => !todo.complete)
+    setTodos(todo)
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="p-1 container">
+      <h3>
+        <div className="float-right text-14-normal">{fecha}</div>
+        Lista de tareas del d&iacute;a
+      </h3>
+      <hr />
+      <div className="row">
+        <div className="col-6 align-top">
+          <div className="alert alert-primary padding-left-15 padding-5 font-18 bold">Por hacer</div>
+          <TodoList todos={todos} toggleTodo={toggleTodo} filtro="A" className="mb-3" />
+        </div>
+        <div className="col-6 align-top">
+          <div className="alert alert-success padding-left-15 padding-5 font-18 bold">Completadas</div>
+          <TodoList todos={todos} toggleTodo={toggleTodo} filtro="C" className="mb-3" />
+        </div>
+      </div>
+      <input ref={todoNameRef} type="text" className="form-control w-1 mb-3 mt-3" autoFocus />
+      <button onClick={handleAddTodo} className="btn btn-primary">Agregar Tarea</button>
+      &nbsp;&nbsp;&nbsp;
+      <button onClick={handleClearTodos} className="btn btn-success">Limpia tareas terminadas</button>
+      <div className="mt-3 h5">{todos.filter(todo => !todo.complete).length} tareas pendientes</div>
     </div>
-  );
+  )
 }
 
 export default App;
