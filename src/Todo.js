@@ -16,17 +16,14 @@ export default function Todo({ todo, toggleTodo, filtro }) {
       etiqueta =
         <>
           <input type="checkbox" checked={todo.complete} onChange={handleTodoClick} />
-        &nbsp;&nbsp;
+          &nbsp;&nbsp;
           <span className="green text-normal">
-            <strike> {todo.name}&nbsp;</strike>
+            <strike> {todo.name}</strike>&nbsp;&nbsp;
             <span className="green text-14-normal">({todo.hour})</span>
           </span>
         </>
     }
   }
-
-  if (checkbox) console.log(">>>>" + checkbox)
-  if (etiqueta) console.log(">>>>" + etiqueta)
 
   if (checkbox || etiqueta) {
     render =

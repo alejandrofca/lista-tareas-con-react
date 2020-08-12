@@ -7,6 +7,7 @@ const LOCAL_STORAGE_KEY = 'todoApp.todos'
 function App() {
   var [todos, setTodos] = useState([])
   const todoNameRef = useRef()
+  const buttonNameRef = useRef()
   const fecha = new Date().toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric', year: 'numeric', month: 'long' })
 
   useEffect(() => {
@@ -15,24 +16,27 @@ function App() {
   }, [])
 
   useEffect(() => {
-    console.log(todos)
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(todos))
   }, [todos])
 
   function toggleTodo(id) {
     const todo = todos.find(todo => todo.id === id)
     todo.complete = !todo.complete
-    if(todo.complete) { // Actualiza la hora
-      todo.hour = new Date().toLocaleDateString('es-MX', { hour: 'numeric', minute: 'numeric' })
+    if (todo.complete) { // Actualiza la hora
+      var d = new Date();
+      var h = ('0'+d.getHours()).substr(-2);
+      var m = ('0'+d.getMinutes()).substr(-2);
+      todo.hour = h+":"+m
     }
     setTodos([...todos])
+    todoNameRef.current.focus()
   }
 
-  function handleAddTodo(e) {
+  function handleAddTodo() {
     const name = todoNameRef.current.value
     if (name === '') return
     setTodos(prevTodos => {
-      return [...prevTodos, { id: v4(), name: name, complete: false, hour: new Date().toLocaleDateString('es-MX', { hour: 'numeric', minute: 'numeric' }) }]
+      return [...prevTodos, { id: v4(), name: name, complete: false, hour: "" }]
     })
     todoNameRef.current.value = null
     todoNameRef.current.focus()
@@ -41,6 +45,12 @@ function App() {
   function handleClearTodos() {
     const todo = todos.filter(todo => !todo.complete)
     setTodos(todo)
+  }
+
+  function handleKeyDown(event) {
+    if (event.key === 'Enter') {
+      handleAddTodo()
+    }
   }
 
   return (
@@ -60,10 +70,10 @@ function App() {
           <TodoList todos={todos} toggleTodo={toggleTodo} filtro="C" className="mb-3" />
         </div>
       </div>
-      <input ref={todoNameRef} type="text" className="form-control w-1 mb-3 mt-3" autoFocus />
+      <input ref={todoNameRef} type="text" className="form-control w-1 mb-3 mt-3" onKeyDown={handleKeyDown} autoFocus />
       <button onClick={handleAddTodo} className="btn btn-primary">Agregar Tarea</button>
       &nbsp;&nbsp;&nbsp;
-      <button onClick={handleClearTodos} className="btn btn-success">Limpia tareas terminadas</button>
+      <button ref={buttonNameRef} onClick={handleClearTodos} className="btn btn-success">Limpia tareas terminadas</button>
       <div className="mt-3 h5">{todos.filter(todo => !todo.complete).length} tareas pendientes</div>
     </div>
   )
