@@ -53,6 +53,12 @@ function App() {
     }
   }
 
+  function handleClearLocal() {
+    console.log(todos)
+    setTodos([])
+    localStorage.setItem(LOCAL_STORAGE_KEY, "{}")
+  }
+
   return (
     <div className="p-1 container">
       <h3>
@@ -74,6 +80,8 @@ function App() {
       <button onClick={handleAddTodo} className="btn btn-primary">Agregar Tarea</button>
       &nbsp;&nbsp;&nbsp;
       <button ref={buttonNameRef} onClick={handleClearTodos} className="btn btn-success">Limpia tareas terminadas</button>
+      &nbsp;&nbsp;&nbsp;
+      <button onClick={handleClearLocal} className="btn btn-warning">Reiniciar todo</button>
       <div className="mt-3 h5">{todos.filter(todo => !todo.complete).length} tareas pendientes</div>
     </div>
   )
