@@ -41,7 +41,7 @@ function App() {
     setTodos([...tareas])
   }
 
-  function handleAddTodo() {
+  function handleAgregarTarea() {
     if (!tareaNameRef.current.value) {
       alertNameRef.current.innerHTML = creaAlertaTareaVacia().__html
       tareaNameRef.current.focus()
@@ -63,7 +63,7 @@ function App() {
 
   function handleKeyDown(event) {
     if (event.key === 'Enter') {
-      handleAddTodo()
+      handleAgregarTarea()
     }
   }
 
@@ -104,7 +104,7 @@ function App() {
       <div ref={alertNameRef}></div>
       <div className="row">
         <div className="col align-top">
-          <button onClick={handleAddTodo} className="btn btn-primary">Agregar tarea</button>
+          <button onClick={handleAgregarTarea} className="btn btn-primary">Agregar tarea</button>
         </div>
         <div className="col align-top">
           <button ref={buttonNameRef} onClick={handleClearTodos} className="btn btn-success">Limpiar terminadas</button>
