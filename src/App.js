@@ -8,7 +8,7 @@ import styles from './css/style.css';
 const LOCAL_STORAGE_KEY = 'appTareas.tareas'
 
 function App() {
-  var [tareas, setTodos] = useState([])
+  var [tareas, setTareas] = useState([])
     // Descomentar para arrancar componente con tareas de ejemplo 
     // ([
     //   { id: v4(), name: "Llamar a la contadora", complete: false, hour: ""},
@@ -21,8 +21,8 @@ function App() {
   const fecha = new Date().toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric', month: 'long' })
 
   useEffect(() => {
-    const storedTodos = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY))
-    if (storedTodos) setTodos(storedTodos)
+    const tareasGuardadas = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY))
+    if (tareasGuardadas) setTareas(tareasGuardadas)
   }, [])
 
   useEffect(() => {
@@ -38,7 +38,7 @@ function App() {
       var m = ('0' + d.getMinutes()).substr(-2);
       tarea.hour = h + ":" + m
     }
-    setTodos([...tareas])
+    setTareas([...tareas])
   }
 
   function handleAgregarTarea() {
@@ -49,16 +49,16 @@ function App() {
 
     const name = tareaNameRef.current.value
     if (name === '') return
-    setTodos(prevTodos => {
-      return [...prevTodos, { id: v4(), name: name, complete: false, hour: "" }]
+    setTareas(tareasPrevias => {
+      return [...tareasPrevias, { id: v4(), name: name, complete: false, hour: "" }]
     })
     tareaNameRef.current.value = null
     tareaNameRef.current.focus()
   }
 
-  function handleClearTodos() {
+  function handleLimpiarTareas() {
     const tarea = tareas.filter(tarea => !tarea.complete)
-    setTodos(tarea)
+    setTareas(tarea)
   }
 
   function handleKeyDown(event) {
@@ -73,7 +73,7 @@ function App() {
 
   function handleClearLocal() {
     console.log(tareas)
-    setTodos([])
+    setTareas([])
     localStorage.setItem(LOCAL_STORAGE_KEY, "{}")
     tareaNameRef.current.focus()
   }
@@ -107,7 +107,7 @@ function App() {
           <button onClick={handleAgregarTarea} className="btn btn-primary">Agregar tarea</button>
         </div>
         <div className="col align-top">
-          <button ref={buttonNameRef} onClick={handleClearTodos} className="btn btn-success">Limpiar terminadas</button>
+          <button ref={buttonNameRef} onClick={handleLimpiarTareas} className="btn btn-success">Limpiar terminadas</button>
         </div>
         <div className="col align-top">
           <button onClick={handleClearLocal} className="btn btn-warning">Reiniciar todo</button>
