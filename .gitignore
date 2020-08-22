@@ -5,6 +5,7 @@
 /.pnp
 .pnp.js
 component-as-class.js
+test.js
 
 # testing
 /coverage

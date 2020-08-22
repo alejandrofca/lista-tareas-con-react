@@ -1,25 +1,25 @@
 import React from 'react'
 
-export default function Todo({ todo, toggleTodo, filtro }) {
-  function handleTodoClick() {
-    toggleTodo(todo.id)
+export default function Tarea({ tarea, toggleTarea, filtro }) {
+  function handleTareaClick() {
+    toggleTarea(tarea.id)
   }
 
   let checkbox, etiqueta, render
   if (filtro === "A") { // Activa
-    if (!todo.complete) {
-      checkbox = <input type="checkbox" checked={todo.complete} onChange={handleTodoClick} />;
-      etiqueta = todo.name;
+    if (!tarea.complete) {
+      checkbox = <input type="checkbox" checked={tarea.complete} onChange={handleTareaClick} />;
+      etiqueta = tarea.name;
     }
   } else if (filtro === "C") { // Completada
-    if (todo.complete) {
+    if (tarea.complete) {
       etiqueta =
         <>
-          <input type="checkbox" checked={todo.complete} onChange={handleTodoClick} />
+          <input type="checkbox" checked={tarea.complete} onChange={handleTareaClick} />
           &nbsp;&nbsp;
           <span className="green text-normal">
-            <strike> {todo.name}</strike>&nbsp;&nbsp;
-            <span className="green text-14-normal">({todo.hour})</span>
+            <strike> {tarea.name}</strike>&nbsp;&nbsp;
+            <span className="green text-14-normal">({tarea.hour})</span>
           </span>
         </>
     }

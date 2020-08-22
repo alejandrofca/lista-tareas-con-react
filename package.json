@@ -1,6 +1,6 @@
 {
   "name": "lista-de-tareas-react",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
@@ -8,7 +8,7 @@
     "@testing-library/user-event": "^7.2.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.2",
+    "react-scripts": "^3.4.2",
     "uuid": "^8.3.0"
   },
   "homepage": "https://www.infolabs.mx/demos/lista-tareas-react",

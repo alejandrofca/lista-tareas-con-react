@@ -1,19 +1,24 @@
+// Crédito: Canal YouTube Web Dev https://www.youtube.com/watch?v=hQAHSlTtcmY
+
 import React, { useState, useRef, useEffect } from 'react';
-import TodoList from './TodoList'
+import ListaTareas from './ListaTareas'
 import { v4 } from 'uuid'
-import styles from './style.css';
+import styles from './css/style.css';
 
-const js_logo = require('./images/javascript.png')
-const node_logo = require('./images/nodejs.png')
-const react_logo = require('./images/react.png')
-
-const LOCAL_STORAGE_KEY = 'todoApp.todos'
+const LOCAL_STORAGE_KEY = 'appTareas.tareas'
 
 function App() {
-  var [todos, setTodos] = useState([])
-  const todoNameRef = useRef()
+  var [tareas, setTodos] = useState([])
+    // Descomentar para arrancar componente con tareas de ejemplo 
+    // ([
+    //   { id: v4(), name: "Llamar a la contadora", complete: false, hour: ""},
+    //   { id: v4(), name: "Recoger ropa de tintorería", complete: false, hour: ""},
+    //   { id: v4(), name: "Enviar correo a mi jefe", complete: false, hour: ""},
+    // ])
+  const tareaNameRef = useRef()
   const buttonNameRef = useRef()
-  const fecha = new Date().toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric', year: 'numeric', month: 'long' })
+  const alertNameRef = useRef()
+  const fecha = new Date().toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric', month: 'long' })
 
   useEffect(() => {
     const storedTodos = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY))
@@ -21,36 +26,39 @@ function App() {
   }, [])
 
   useEffect(() => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(todos))
-  }, [todos])
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(tareas))
+  }, [tareas])
 
-  function toggleTodo(id) {
-    const todo = todos.find(todo => todo.id === id)
-    todo.complete = !todo.complete
-    if (todo.complete) { // Actualiza la hora
+  function toggleTarea(id) {
+    const tarea = tareas.find(tarea => tarea.id === id)
+    tarea.complete = !tarea.complete
+    if (tarea.complete) { // Actualiza la hora
       var d = new Date();
       var h = ('0' + d.getHours()).substr(-2);
       var m = ('0' + d.getMinutes()).substr(-2);
-      todo.hour = h + ":" + m
+      tarea.hour = h + ":" + m
     }
-    setTodos([...todos])
-    todoNameRef.current.focus()
+    setTodos([...tareas])
   }
 
   function handleAddTodo() {
-    const name = todoNameRef.current.value
+    if (!tareaNameRef.current.value) {
+      alertNameRef.current.innerHTML = creaAlertaTareaVacia().__html
+      tareaNameRef.current.focus()
+    } else alertNameRef.current.innerHTML = ""
+
+    const name = tareaNameRef.current.value
     if (name === '') return
     setTodos(prevTodos => {
       return [...prevTodos, { id: v4(), name: name, complete: false, hour: "" }]
     })
-    todoNameRef.current.value = null
-    todoNameRef.current.focus()
+    tareaNameRef.current.value = null
+    tareaNameRef.current.focus()
   }
 
   function handleClearTodos() {
-    const todo = todos.filter(todo => !todo.complete)
-    setTodos(todo)
-    todoNameRef.current.focus()
+    const tarea = tareas.filter(tarea => !tarea.complete)
+    setTodos(tarea)
   }
 
   function handleKeyDown(event) {
@@ -59,48 +67,52 @@ function App() {
     }
   }
 
+  function creaAlertaTareaVacia() {
+    return { __html: '<div className="alert alert-danger green"><code>Escriba la tarea :)</code></div>' };
+  }
+
   function handleClearLocal() {
-    console.log(todos)
+    console.log(tareas)
     setTodos([])
     localStorage.setItem(LOCAL_STORAGE_KEY, "{}")
-    todoNameRef.current.focus()
+    tareaNameRef.current.focus()
   }
 
   return (
-    <div className="p-1 container">
-      <div class="container">
-        <span><a href="demos">Regresar a la lista de demos</a></span>
+    <div className="container">
+      <div className="d-flex justify-content-between align-items-center">
+        <h3>
+          Lista de tareas del d&iacute;a
+          <div className="text-16-normal padding-top-10">(No olvides tus tareas durante el d&iacute;a)</div>
+        </h3>
       </div>
       <hr />
-      <h3 className="d-flex justify-content-between align-items-center">
-        Lista de tareas del d&iacute;a
-        <div className="float-right text-14-normal">{fecha}</div>
-        <div className="text-14-normal bold">
-          <center>Aplicaci&oacute;n desarrollada con:</center>
-          <br />
-          <img src={react_logo} alt="ReactJS" />&nbsp;&nbsp;&nbsp;&nbsp;
-          <img src={node_logo} alt="ReactJS" />&nbsp;&nbsp;&nbsp;&nbsp;
-          <img src={js_logo} alt="ReactJS" />
-        </div>
-      </h3>
+      <div className="float-right text-14-normal">{fecha}</div>
+      <div className="mt-3 h5">{tareas.filter(tarea => !tarea.complete).length} tareas pendientes</div>
       <hr />
       <div className="row">
-        <div className="col-6 align-top">
+        <div className="col-md-6 align-top">
           <div className="alert alert-primary padding-left-15 padding-5 font-18 bold">Por hacer</div>
-          <TodoList todos={todos} toggleTodo={toggleTodo} filtro="A" className="mb-3" />
+          <ListaTareas tareas={tareas} toggleTarea={toggleTarea} filtro="A" className="mb-3" />
         </div>
-        <div className="col-6 align-top">
+        <div className="col-md-6 align-top">
           <div className="alert alert-success padding-left-15 padding-5 font-18 bold">Completadas</div>
-          <TodoList todos={todos} toggleTodo={toggleTodo} filtro="C" className="mb-3" />
+          <ListaTareas tareas={tareas} toggleTarea={toggleTarea} filtro="C" className="mb-3" />
         </div>
       </div>
-      <input placeholder="Escriba su tarea" ref={todoNameRef} type="text" className="form-control w-1 mb-3 mt-3" onKeyDown={handleKeyDown} autoFocus />
-      <button onClick={handleAddTodo} className="btn btn-primary">Agregar tarea</button>
-      &nbsp;&nbsp;&nbsp;
-      <button ref={buttonNameRef} onClick={handleClearTodos} className="btn btn-success">Limpia tareas terminadas</button>
-      &nbsp;&nbsp;&nbsp;
-      <button onClick={handleClearLocal} className="btn btn-warning">Reiniciar todo</button>
-      <div className="mt-3 h5">{todos.filter(todo => !todo.complete).length} tareas pendientes</div>
+      <input placeholder="Escriba su tarea" ref={tareaNameRef} type="text" className="form-control w-1 mb-3 mt-3" onKeyDown={handleKeyDown} autoFocus />
+      <div ref={alertNameRef}></div>
+      <div className="row">
+        <div className="col align-top">
+          <button onClick={handleAddTodo} className="btn btn-primary">Agregar tarea</button>
+        </div>
+        <div className="col align-top">
+          <button ref={buttonNameRef} onClick={handleClearTodos} className="btn btn-success">Limpiar terminadas</button>
+        </div>
+        <div className="col align-top">
+          <button onClick={handleClearLocal} className="btn btn-warning">Reiniciar todo</button>
+        </div>
+      </div>
     </div>
   )
 }
